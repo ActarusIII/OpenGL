@@ -22,7 +22,8 @@ Game game = Game(25);
 int currentPlayer = 1;
 Player player1(game);
 Player player2(game);
-std::string displayString = "hello world";
+std::string displayString = "";
+char* displayRules = "Player 1 plays with TAB, Player 2 plays with SPACE";
 bool isGameOver = false;
 
 Model3D  *geometrie_raptor = NULL;
@@ -424,22 +425,19 @@ void main_loop() {
 
 	
 	displayFloor();
-	if (player1.hasWon) {
-		displayString = "player 1 wins";
-		isGameOver = true;
-	}
-	else if (player2.hasWon) {
-		displayString = "player 2 wins";
-		isGameOver = true;
-	}
-	else {
+
+
 		if (currentPlayer == 1) {
 			if (inp->keys[KEY_CODE_TAB]) {
 				int de = d(1, 3);
-				displayString = "player 1 throws a " + std::to_string(de);
+				displayString = "Player 1 throws a " + std::to_string(de)+ ".";
 
 				for (int i = 0; i < de; i++) {
 					player1.move(1);
+					player1.checkForWins();
+					if (player1.hasWon) {
+						break;
+					}
 					updateSpritePosition(1);
 				}
 				if (player1.currentCase.type == MEAN) {
@@ -449,16 +447,24 @@ void main_loop() {
 					}
 				}
 				player1.checkForWins();
+				if (player1.hasWon) {
+					displayString = "Player 1 wins.";
+					isGameOver = true;
+				}
 				currentPlayer = 2;
 			}
 		}
-		else {
+		else if ( !player1.hasWon){
 			if (inp->keys[KEY_CODE_SPACE]) {
 				int de = d(1, 3);
-				displayString = "player 2 throws a " + std::to_string(de);
+				displayString = "Player 2 throws a " + std::to_string(de) + ".";
 	
 				for (int i = 0; i < de; i++) {
 					player2.move(1);
+					player2.checkForWins();
+					if (player2.hasWon) {
+						break;
+					}
 					updateSpritePosition(2);
 				}
 				if (player2.currentCase.type == MEAN) {
@@ -468,14 +474,16 @@ void main_loop() {
 					}
 				}
 				player2.checkForWins();
+				if (player2.hasWon) {
+					displayString = "Player 2 wins.";
+					isGameOver = true;
+				}
 				currentPlayer = 1;
 			}
 		}
 		displayRaptor(1, player1.currentCase.numero);
 		displayRaptor(2, player2.currentCase.numero);
-	}
-
-
+	
 	//gestion du reset (non fonctionnel)
 	if (isGameOver){
 		reset();
@@ -485,6 +493,7 @@ void main_loop() {
 	std::copy(displayString.begin(), displayString.end(), displayChar);
 	displayChar[displayString.size()] = '\0';
 	write_2_screen(displayChar, 500, -500, 200);
+	write_2_screen(displayRules, 600, 100, 200);
 
 	// Displaying the created image to the screen
 	swap_buffer(win);

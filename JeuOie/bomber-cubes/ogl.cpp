@@ -208,6 +208,7 @@ void gotoxy(int x, int y)
 \**************************************************************************/
 void write_2_screen(char *text, float posX, float posY, float posZ)
 {
+	glColor3f(1, 1, 1);
 	glDisable(GL_TEXTURE_2D);
 	glPushAttrib(GL_LIST_BIT);
 	glListBase(FontDiplayList - 32);
