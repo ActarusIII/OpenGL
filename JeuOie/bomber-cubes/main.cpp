@@ -20,11 +20,14 @@
 //jeu de l'oie
 Game game = Game(25);
 int currentPlayer = 1;
+int de;
 Player player1(game);
 Player player2(game);
 std::string displayString = "";
-char* displayRules = "Player 1 plays with TAB, Player 2 plays with SPACE";
+char* displayRules = "Player 1 plays with TAB, Player 2 plays with SPACE.";
 char* specialDisplay = "";
+char* displayPlayer1 = "Player 1";
+char* displayPlayer2 = "Player 2";
 bool isGameOver = false;
 
 Model3D  *geometrie_raptor = NULL;
@@ -64,7 +67,7 @@ TIMER *tim = NULL;
 CAMERA *cam;
 float posXCam = nbSquareX * sizeSquareX / 2 ;
 float posYCam = 350.0f;
-float posZCam = -100.0f;
+float posZCam = -150.0f;
 float targetPosX = nbSquareX * sizeSquareX / 2;
 float targetPosY = -150.0f;
 float targetPosZ = nbSquareZ * sizeSquareZ / 2;
@@ -109,10 +112,10 @@ bool start() {
 	geometrie_raptor = new Model3D();
 	geometrie_raptor->load_3d_model("data/RAPTOR.off");
 	texture_raptor = new Texture();
-	texture_raptor->load_texture("data/RAPTOR.tga", NULL);
+	texture_raptor->load_texture("data/RAPTOR3.tga", NULL);
 	glGenTextures(1, texture_raptor->OpenGL_ID);
 	texture_raptor2 = new Texture();
-	texture_raptor2->load_texture("data/arbre.tga", NULL);
+	texture_raptor2->load_texture("data/RAPTOR2.tga", NULL);
 	glGenTextures(1, texture_raptor2->OpenGL_ID);
 
 	// Naming the window
@@ -301,7 +304,6 @@ void displayRaptor(int numero, int currentCase)
 
 	glTranslatef(850+offset+zmove, 8600-xmove, 250); //TODO
 
-
 	glBegin(GL_TRIANGLES);
 	for (int i = 0; i < geometrie_raptor->nb_triangles; i++) {
 		glTexCoord2f(geometrie_raptor->points[geometrie_raptor->faces[i].a].ucol, geometrie_raptor->points[geometrie_raptor->faces[i].a].vcol);
@@ -401,6 +403,8 @@ void displayFloor() {
 }
 
 void main_loop() {
+
+	glClearColor(0.1f, 0.1f, 0.25f, 1.0f);
 	// Time update
 	tim->update_horloge();
 	// Input update
@@ -425,11 +429,9 @@ void main_loop() {
 
 	
 	displayFloor();
-
-
 		if (currentPlayer == 1) {
 			if (inp->keys[KEY_CODE_TAB]) {
-				int de = d(1, 4);
+				de = d(1, 4);
 				displayString = "Player 1 throws a " + std::to_string(de)+ ".";
 
 				for (int i = 0; i < de; i++) {
@@ -452,16 +454,16 @@ void main_loop() {
 				}
 				player1.checkForWins();
 				if (player1.hasWon) {
-					displayString = "Player 1 wins.";
+					specialDisplay = "Player 1 wins.";
 					isGameOver = true;
 				}
 				currentPlayer = 2;
 				glColor3f(0, 0, 1);
 			}
 		}
-		else if ( !player1.hasWon){
+		else if (!player1.hasWon){
 			if (inp->keys[KEY_CODE_SPACE]) {
-				int de = d(1, 3);
+				de = d(1, 4);
 				displayString = "Player 2 throws a " + std::to_string(de) + ".";
 	
 				for (int i = 0; i < de; i++) {
@@ -484,15 +486,17 @@ void main_loop() {
 				}
 				player2.checkForWins();
 				if (player2.hasWon) {
-					displayString = "Player 2 wins.";
+					specialDisplay = "Player 2 wins.";
 					isGameOver = true;
 				}
 				currentPlayer = 1;
 				glColor3f(0, 1, 1);
 			}
 		}
+		
 		displayRaptor(1, player1.currentCase.numero);
 		displayRaptor(2, player2.currentCase.numero);
+		
 	
 	//gestion du reset (non fonctionnel)
 	if (isGameOver){
@@ -504,13 +508,10 @@ void main_loop() {
 	displayChar[displayString.size()] = '\0';
 	glColor3f(1, 1, 1);
 	write_2_screen(displayRules, 600, 100, 200);
-	if (currentPlayer == 1) {
-		glColor3f(0, 1, 1);
-	}
-	else {
-		glColor3f(0, 0, 1);
-	}
 	write_2_screen(displayChar, 500, -500, 200);
+	write_2_screen(displayPlayer1, 1090, -190, 200);
+	write_2_screen(displayPlayer2, 950, 0, 200);
+	glColor3f(1, 0, 0);
 	write_2_screen(specialDisplay, 500, -550, 200);
 
 	// Displaying the created image to the screen

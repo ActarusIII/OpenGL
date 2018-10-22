@@ -25,7 +25,7 @@ Game::Game(int nombre) : nombreCases(nombre) {
 
 
 void Player::checkForWins() {
-	if (currentCase.caseSuivante==-1){
+	if (currentCase.caseSuivante==game.nombreCases){
 		hasWon = true;
 	}
 }
