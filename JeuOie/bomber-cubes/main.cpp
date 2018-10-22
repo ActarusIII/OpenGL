@@ -24,6 +24,7 @@ Player player1(game);
 Player player2(game);
 std::string displayString = "";
 char* displayRules = "Player 1 plays with TAB, Player 2 plays with SPACE";
+char* specialDisplay = "";
 bool isGameOver = false;
 
 Model3D  *geometrie_raptor = NULL;
@@ -399,7 +400,6 @@ void displayFloor() {
 	
 }
 
-
 void main_loop() {
 	// Time update
 	tim->update_horloge();
@@ -429,7 +429,7 @@ void main_loop() {
 
 		if (currentPlayer == 1) {
 			if (inp->keys[KEY_CODE_TAB]) {
-				int de = d(1, 3);
+				int de = d(1, 4);
 				displayString = "Player 1 throws a " + std::to_string(de)+ ".";
 
 				for (int i = 0; i < de; i++) {
@@ -441,10 +441,14 @@ void main_loop() {
 					updateSpritePosition(1);
 				}
 				if (player1.currentCase.type == MEAN) {
-					for (int i = 0; i < 3; i++) {
+					for (int i = 0; i < 2; i++) {
 						player1.move(-1);
 						updateSpritePosition(1);
 					}
+					specialDisplay = "The player hit a red case and went back 2 cases !";
+				}
+				else {
+					specialDisplay = "";
 				}
 				player1.checkForWins();
 				if (player1.hasWon) {
@@ -452,6 +456,7 @@ void main_loop() {
 					isGameOver = true;
 				}
 				currentPlayer = 2;
+				glColor3f(0, 0, 1);
 			}
 		}
 		else if ( !player1.hasWon){
@@ -472,6 +477,10 @@ void main_loop() {
 						player2.move(-1);
 						updateSpritePosition(2);
 					}
+					specialDisplay = "The player hit a red case and went back 2 cases !";
+				}
+				else {
+					specialDisplay = "";
 				}
 				player2.checkForWins();
 				if (player2.hasWon) {
@@ -479,6 +488,7 @@ void main_loop() {
 					isGameOver = true;
 				}
 				currentPlayer = 1;
+				glColor3f(0, 1, 1);
 			}
 		}
 		displayRaptor(1, player1.currentCase.numero);
@@ -492,8 +502,16 @@ void main_loop() {
 	char *displayChar = new char[displayString.size() + 1];
 	std::copy(displayString.begin(), displayString.end(), displayChar);
 	displayChar[displayString.size()] = '\0';
-	write_2_screen(displayChar, 500, -500, 200);
+	glColor3f(1, 1, 1);
 	write_2_screen(displayRules, 600, 100, 200);
+	if (currentPlayer == 1) {
+		glColor3f(0, 1, 1);
+	}
+	else {
+		glColor3f(0, 0, 1);
+	}
+	write_2_screen(displayChar, 500, -500, 200);
+	write_2_screen(specialDisplay, 500, -550, 200);
 
 	// Displaying the created image to the screen
 	swap_buffer(win);
